@@ -1,7 +1,7 @@
 module Main exposing (Model, Msg, init, main, subscriptions, update, view)
 
+import Array exposing (Array)
 import Browser
-import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Random exposing (Generator)
@@ -35,7 +35,7 @@ type Msg
 
 
 type alias Grid =
-    Dict Int (Dict Int State)
+    Array (Array State)
 
 
 type State
@@ -63,7 +63,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { counter = 0, grid = Dict.empty }
+    ( { counter = 0, grid = Array.empty }
     , Random.generate SetGrid gridGenerator
     )
 
@@ -113,18 +113,17 @@ view model =
 
 showGrid : Grid -> Html Msg
 showGrid grid =
-    div [] <|
-        (grid |> Dict.toList |> List.map showRow)
+    div [] <| (Array.indexedMap showRow grid |> Array.toList)
 
 
-showRow : ( Int, Dict Int State ) -> Html Msg
-showRow ( _, rowDict ) =
+showRow : Int -> Array State -> Html Msg
+showRow _ rowDict =
     div [ style "margin" "0", style "padding" "0", style "line-height" "0" ] <|
-        (rowDict |> Dict.toList |> List.map showCell)
+        (Array.indexedMap showCell rowDict |> Array.toList)
 
 
-showCell : ( Int, State ) -> Html Msg
-showCell ( _, state ) =
+showCell : Int -> State -> Html Msg
+showCell _ state =
     let
         background =
             case state of
@@ -150,12 +149,12 @@ showCell ( _, state ) =
 
 updateGrid : Grid -> Grid
 updateGrid grid =
-    Dict.map (updateRow grid) grid
+    Array.indexedMap (updateRow grid) grid
 
 
-updateRow : Grid -> Int -> Dict Int State -> Dict Int State
+updateRow : Grid -> Int -> Array State -> Array State
 updateRow grid y column =
-    Dict.map
+    Array.indexedMap
         (\x state -> updateCell (getAliveCount grid x y) state)
         column
 
@@ -189,7 +188,7 @@ getAliveCount grid cellX cellY =
 
 getCellState : Grid -> ( Int, Int ) -> Maybe State
 getCellState grid ( x, y ) =
-    Dict.get y grid |> Maybe.andThen (Dict.get x)
+    Array.get y grid |> Maybe.andThen (Array.get x)
 
 
 isInsideGrid : Int -> Int -> Bool
@@ -238,15 +237,13 @@ stateGenerator =
     Random.uniform Alive [ Dead ]
 
 
-columnGenerator : Generator (Dict Int State)
+columnGenerator : Generator (Array State)
 columnGenerator =
     Random.list gridWidth stateGenerator
-        |> Random.map (List.indexedMap (\i state -> ( i, state )))
-        |> Random.map Dict.fromList
+        |> Random.map Array.fromList
 
 
 gridGenerator : Generator Grid
 gridGenerator =
     Random.list gridHeight columnGenerator
-        |> Random.map (List.indexedMap (\i state -> ( i, state )))
-        |> Random.map Dict.fromList
+        |> Random.map Array.fromList
