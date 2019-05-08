@@ -187,11 +187,6 @@ getCellState grid ( x, y ) =
     Array.get y grid |> Maybe.andThen (Array.get x)
 
 
-isInsideGrid : Int -> Int -> Bool
-isInsideGrid x y =
-    x >= 0 && x < gridWidth && y >= 0 && y < gridHeight
-
-
 getNeighborCoordinates : Int -> Int -> List ( Int, Int )
 getNeighborCoordinates cellX cellY =
     let
@@ -206,21 +201,8 @@ getNeighborCoordinates cellX cellY =
             , ( 1, 1 )
             ]
     in
-    List.filterMap
-        (\( xShift, yShift ) ->
-            let
-                neighborX =
-                    cellX + xShift
-
-                neighborY =
-                    cellY + yShift
-            in
-            if isInsideGrid neighborX neighborY then
-                Just ( neighborX, neighborY )
-
-            else
-                Nothing
-        )
+    List.map
+        (\( xShift, yShift ) -> ( cellX + xShift, cellY + yShift ))
         shiftCoordinates
 
 
