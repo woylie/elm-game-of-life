@@ -2,8 +2,8 @@ module Main exposing (Model, Msg, init, main, subscriptions, update, view)
 
 import Array exposing (Array)
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html, div, p, span, text)
+import Html.Attributes exposing (style)
 import Random exposing (Generator)
 import Time exposing (Posix, every)
 
@@ -29,8 +29,7 @@ type alias Model =
 
 
 type Msg
-    = NoOp
-    | SetGrid Grid
+    = SetGrid Grid
     | Tick Posix
 
 
@@ -84,9 +83,6 @@ subscriptions _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         SetGrid grid ->
             ( { model | grid = grid }, Cmd.none )
 
