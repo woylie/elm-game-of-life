@@ -109,17 +109,17 @@ view model =
 
 showGrid : Grid -> Html Msg
 showGrid grid =
-    div [] <| (Array.indexedMap showRow grid |> Array.toList)
+    div [] <| (Array.toList grid |> List.map showRow)
 
 
-showRow : Int -> Array State -> Html Msg
-showRow _ rowDict =
+showRow : Array State -> Html Msg
+showRow rowDict =
     div [ style "margin" "0", style "padding" "0", style "line-height" "0" ] <|
-        (Array.indexedMap showCell rowDict |> Array.toList)
+        (Array.toList rowDict |> List.map showCell)
 
 
-showCell : Int -> State -> Html Msg
-showCell _ state =
+showCell : State -> Html Msg
+showCell state =
     let
         background =
             case state of
