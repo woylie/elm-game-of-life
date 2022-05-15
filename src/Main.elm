@@ -10,12 +10,12 @@ import Time exposing (Posix, every)
 
 gridWidth : Int
 gridWidth =
-    25
+    50
 
 
 gridHeight : Int
 gridHeight =
-    25
+    50
 
 
 
